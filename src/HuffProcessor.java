@@ -123,10 +123,9 @@ public class HuffProcessor {
 	private int[] readForCounts(BitInputStream in){
 		int[] trey = new int[256];
 		boolean yeet = true;
-        while (yeet == true) {
+        while (true) {
             int tot = in.readBits(BITS_PER_WORD);
             if (tot == -1){
-            	yeet =false;
         		break;
         	}
             trey[tot]++;
@@ -139,7 +138,7 @@ public class HuffProcessor {
         PriorityQueue<HuffNode> pqueue = new PriorityQueue<>();
         for (int j = 0; j < arr.length; j++){
         	if (arr[j] > 0 && j!=arr.length){
-        		if(staysTrue) {
+        		if(staysTrue ==true) {
         		pqueue.add(new HuffNode(j, arr[j]));
         		}
         	}
@@ -181,7 +180,7 @@ public class HuffProcessor {
 		if(nod.myRight == null && nod.myLeft == null){
 			out.writeBits(1, 1); 
 			out.writeBits(9, nod.myValue);
-		return;
+			return;
 		}
 		out.writeBits(1,0);
 		writeHeader(nod.myLeft, out);
@@ -192,7 +191,7 @@ public class HuffProcessor {
 		while(true){
 			int x = inBit.readBits(BITS_PER_WORD);
 			if (x == -1){
-				if(true)break;
+				break;
 			}else {
 				String str = codings[x];		
 				out.writeBits(str.length(), Integer.parseInt(str, 2));
