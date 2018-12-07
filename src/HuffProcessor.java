@@ -94,12 +94,14 @@ public class HuffProcessor {
 	           int numBit = in.readBits(1);
 	           if (numBit == -1) throw new HuffException("No PSEUDO_EOF: please check validity of input");
 	           else { 
-	               if (numBit == 0) curr = curr.myLeft; 
-	               else curr = curr.myRight;
-	               if (curr == null){
-	        		   break;
-	        	   }
-	               if (curr.myLeft == null && curr.myRight == null) {
+	               if (numBit == 0) {
+	            	   curr = curr.myLeft; 
+	               }
+	               else {
+	            	   curr = curr.myRight;
+	               }
+	               if (curr == null) break;
+	               if (curr.myRight == null && curr.myLeft == null && numBit == in.readBits(1)) {
 	                   if (curr.myValue == PSEUDO_EOF) {
 	                       break;
 	                   }
