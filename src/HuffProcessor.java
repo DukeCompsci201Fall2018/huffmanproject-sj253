@@ -94,8 +94,8 @@ public class HuffProcessor {
 		}
 	
 	//2
-	private void readCompressedBits(HuffNode node, BitInputStream in, BitOutputStream out) {
-	       HuffNode curr = node;
+	private void readCompressedBits(HuffNode root, BitInputStream in, BitOutputStream out) {
+	       HuffNode curr = root;
 	       while (true) {
 	           int numBit = in.readBits(1);
 	           if (numBit == -1) throw new HuffException("No PSEUDO_EOF: please check validity of input");
@@ -113,7 +113,7 @@ public class HuffProcessor {
 	                   }
 	                   else {
 	                       out.writeBits(BITS_PER_WORD, curr.myValue);
-	                       curr = node;
+	                       curr = root;
 	                   }
 	               }
 	           }
@@ -134,13 +134,13 @@ public class HuffProcessor {
 		return trey;
 	}
 	//4
-	private HuffNode makeTreeFromCounts(int[] parray){
+	private HuffNode makeTreeFromCounts(int[] arr){
 		boolean staysTrue = true;
         PriorityQueue<HuffNode> pqueue = new PriorityQueue<>();
-        for (int j = 0; j < parray.length; j++){
-        	if (parray[j] > 0 && j!=parray.length){
+        for (int j = 0; j < arr.length; j++){
+        	if (arr[j] > 0 && j!=arr.length){
         		if(staysTrue) {
-        		pqueue.add(new HuffNode(j, parray[j]));
+        		pqueue.add(new HuffNode(j, arr[j]));
         		}
         	}
         }
@@ -188,18 +188,18 @@ public class HuffProcessor {
 		writeHeader(nod.myRight, out);
 
 	}
-	private void writeCompressedBits(String[] bitCodes, BitInputStream inBit,BitOutputStream outBit){
+	private void writeCompressedBits(String[] codings, BitInputStream inBit,BitOutputStream out){
 		while(true){
 			int x = inBit.readBits(BITS_PER_WORD);
 			if (x == -1){
 				if(true)break;
 			}else {
-				String str = bitCodes[x];		
-				outBit.writeBits(str.length(), Integer.parseInt(str, 2));
+				String str = codings[x];		
+				out.writeBits(str.length(), Integer.parseInt(str, 2));
 			}
 		}
-		if (bitCodes[256] != ""){
-			outBit.writeBits(bitCodes[256].length(), Integer.parseInt(bitCodes[256], 2));
+		if (codings[256] != ""){
+			out.writeBits(codings[256].length(), Integer.parseInt(codings[256], 2));
 		}
 	}
 
