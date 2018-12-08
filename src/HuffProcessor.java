@@ -85,7 +85,6 @@ public class HuffProcessor {
 			if (numBit == -1) {
 	            throw new HuffException("No PSEUDO_EOF: please check validity of input");
 	        }else {
-			
 				HuffNode left = readTreeHeader(in);
 				HuffNode right = readTreeHeader(in);
 				return new HuffNode(0,0,left,right);
@@ -94,8 +93,8 @@ public class HuffProcessor {
 		}
 	
 	//2
-	private void readCompressedBits(HuffNode root, BitInputStream in, BitOutputStream out) {
-	       HuffNode curr = root;
+	private void readCompressedBits(HuffNode node, BitInputStream in, BitOutputStream out) {
+	       HuffNode curr = node;
 	       while (true) {
 	           int numBit = in.readBits(1);
 	           if (numBit == -1) throw new HuffException("No PSEUDO_EOF: please check validity of input");
@@ -107,13 +106,11 @@ public class HuffProcessor {
 	            	   curr = curr.myRight;
 	               }
 	               if (curr == null) break;
-	               if (curr.myRight == null && curr.myLeft == null && numBit == in.readBits(1)) {
-	                   if (curr.myValue == PSEUDO_EOF) {
-	                       break;
-	                   }
+	               if (curr.myRight == null && curr.myLeft == null) {
+	                   if (curr.myValue == PSEUDO_EOF) break;
 	                   else {
 	                       out.writeBits(BITS_PER_WORD, curr.myValue);
-	                       curr = root;
+	                       curr = node;
 	                   }
 	               }
 	           }
@@ -125,9 +122,7 @@ public class HuffProcessor {
 		boolean yeet = true;
         while (true) {
             int tot = in.readBits(BITS_PER_WORD);
-            if (tot == -1){
-        		break;
-        	}
+            if (tot == -1)break;
             trey[tot]++;
         }
 		return trey;
@@ -137,7 +132,7 @@ public class HuffProcessor {
 		boolean staysTrue = true;
         PriorityQueue<HuffNode> pqueue = new PriorityQueue<>();
         for (int j = 0; j < arr.length; j++){
-        	if (arr[j] > 0 && j!=arr.length){
+        	if (arr[j] > 0){
         		if(staysTrue ==true) {
         		pqueue.add(new HuffNode(j, arr[j]));
         		}
@@ -187,15 +182,12 @@ public class HuffProcessor {
 		writeHeader(nod.myRight, out);
 
 	}
-	private void writeCompressedBits(String[] codings, BitInputStream inBit,BitOutputStream out){
+	private void writeCompressedBits(String[] codings, BitInputStream in,BitOutputStream out){
 		while(true){
-			int x = inBit.readBits(BITS_PER_WORD);
-			if (x == -1){
-				break;
-			}else {
-				String str = codings[x];		
-				out.writeBits(str.length(), Integer.parseInt(str, 2));
-			}
+			int x = in.readBits(BITS_PER_WORD);
+			if (x == -1)break;
+			String str = codings[x];		
+			out.writeBits(str.length(), Integer.parseInt(str, 2));
 		}
 		if (codings[256] != ""){
 			out.writeBits(codings[256].length(), Integer.parseInt(codings[256], 2));
